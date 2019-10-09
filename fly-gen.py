@@ -41,9 +41,9 @@ if len(sys.argv) < 2:
 logging.basicConfig(level=logging.INFO)
 
 ignored_types = ['void']
-ignored_funcs = ['va_arg', 'va_start', 'va_end', 'va_copy', '',
-                 'assert', 'atexit', 'bsearch', 'qsort']
-type_subs = {'real-floating': 'float'}
+ignored_funcs = ['va_arg', 'va_start', '', 'atexit', 'bsearch', 'qsort']
+# TODO expand into something more meaningful
+type_subs = {'real-floating': 'float', 'scalar': 'int'}
 
 config = Config(ignored_funcs, ignored_types, type_subs)
 

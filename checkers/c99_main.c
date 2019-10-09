@@ -78,6 +78,7 @@ void main(void) {
 	wctrans_t var_wctrans_t = {0};
 	wctype_t var_wctype_t = {0};
 	wint_t var_wint_t = {0};
+	assert(var_int);
 	var_double_complex = cacos(var_double_complex);
 	var_float_complex = cacosf(var_float_complex);
 	var_long_double_complex = cacosl(var_long_double_complex);
@@ -363,6 +364,8 @@ void main(void) {
 	var_int = setjmp(var_jmp_buf);
 	longjmp(var_jmp_buf,var_int);
 	var_int = raise(var_int);
+	va_copy(var_va_list,var_va_list);
+	va_end(var_va_list);
 	var_int = remove(var_const_char_p);
 	var_int = rename(var_const_char_p,var_const_char_p);
 	var_FILE_p = tmpfile();
