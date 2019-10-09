@@ -42,6 +42,9 @@ logging.basicConfig(level=logging.INFO)
 
 ignored_types = ['void']
 ignored_funcs = ['va_arg', 'va_start', '', 'atexit', 'bsearch', 'qsort']
+# TODO terminal functions must be the last
+final_funcs = ['longjmp', 'abort', 'exit', '_Exit']
+ignored_funcs.extend(final_funcs)
 # TODO expand into something more meaningful
 type_subs = {'real-floating': 'float', 'scalar': 'int'}
 
