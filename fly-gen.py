@@ -42,13 +42,11 @@ logging.basicConfig(level=logging.INFO)
 
 ignored_types = ['void']
 ignored_funcs = ['va_arg', 'va_start', '', 'atexit', 'bsearch', 'qsort']
-# TODO terminal functions must be the last
-final_funcs = ['longjmp', 'abort', 'exit', '_Exit']
-ignored_funcs.extend(final_funcs)
+conditional_funcs = ['longjmp', 'abort', 'exit', '_Exit']
 # TODO expand into something more meaningful
 type_subs = {'real-floating': 'float', 'scalar': 'int'}
 
-config = Config(ignored_funcs, ignored_types, type_subs)
+config = Config(ignored_funcs, ignored_types, type_subs, conditional_funcs)
 
 headers = parse(sys.argv[1], config)
 all_types = collect_types(headers)
@@ -56,4 +54,4 @@ var_decls = generate_zero_decls(list(all_types))
 type_idx = {v.type: v for v in var_decls}
 
 with open(sys.argv[2], 'w') as f:
-    f.write(generate_test_file(headers, type_idx))
+    f.write(generate_test_file(headers, type_idx, config))

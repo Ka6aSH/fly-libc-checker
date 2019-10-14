@@ -22,7 +22,7 @@
 #include <time.h>
 #include <wchar.h>
 #include <wctype.h>
-void main(void) {
+void main(int argc, char *argv[]) {
 	FILE * var_FILE_p = {0};
 	char * var_char_p = {0};
 	char ** var_char_pp = {0};
@@ -362,7 +362,8 @@ void main(void) {
 	var_int = islessgreater(var_float,var_float);
 	var_int = isunordered(var_float,var_float);
 	var_int = setjmp(var_jmp_buf);
-	longjmp(var_jmp_buf,var_int);
+	if (argc < 1)
+		longjmp(var_jmp_buf,var_int);
 	var_int = raise(var_int);
 	va_copy(var_va_list,var_va_list);
 	va_end(var_va_list);
@@ -429,9 +430,12 @@ void main(void) {
 	free(var_void_p);
 	var_void_p = malloc(var_size_t);
 	var_void_p = realloc(var_void_p,var_size_t);
-	abort();
-	exit(var_int);
-	_Exit(var_int);
+	if (argc < 2)
+		abort();
+	if (argc < 3)
+		exit(var_int);
+	if (argc < 4)
+		_Exit(var_int);
 	var_char_p = getenv(var_const_char_p);
 	var_int = system(var_const_char_p);
 	var_int = abs(var_int);

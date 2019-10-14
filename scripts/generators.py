@@ -14,7 +14,7 @@
 
 from typing import List, Optional, Dict
 
-from scripts import VarDecl, Header
+from scripts import VarDecl, Header, Config
 
 
 def generate_zero_decls(types: Optional[List[str]]) -> List[VarDecl]:
@@ -30,21 +30,30 @@ def generate_zero_decls(types: Optional[List[str]]) -> List[VarDecl]:
 
 
 def generate_test_file(headers: List[Header],
-                       type_idx: Dict[str, VarDecl]) -> str:
+                       type_idx: Dict[str, VarDecl],
+                       config: Optional[Config] = None) -> str:
     output = []
 
     for h in headers:
         output.append('#include <{}>'.format(h.name))
 
-    output.append('void main(void) {')
+    output.append('void main(int argc, char *argv[]) {')
     # To have stable output, traverse sorted keys
     sorted_var_names = sorted(type_idx.keys())
     for name in sorted_var_names:
         output.append('\t{}'.format(type_idx[name].decl))
 
+    # Provides different conditions so that they would not be optimized out
+    cond_counter = 1
     for h in headers:
         for f in h.funcs:
-            line = '\t'
+            if config and f.symbol in config.conditioned_functions:
+                output.append('\tif (argc < {})'.format(cond_counter))
+                cond_counter += 1
+                line = '\t\t'
+            else:
+                line = '\t'
+
             if f.ret_type:
                 line += '{} = '.format(type_idx[f.ret_type].name)
             line += '{}('.format(f.symbol)

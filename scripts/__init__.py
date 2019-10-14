@@ -18,10 +18,12 @@ from typing import List, Optional, Dict
 class Config:
     def __init__(self, ignored_functions: Optional[List[str]] = None,
                  ignored_types: Optional[List[str]] = None,
-                 type_substitution: Optional[Dict[str, str]] = None) -> None:
+                 type_substitution: Optional[Dict[str, str]] = None,
+                 conditioned_functions: Optional[List[str]] = None) -> None:
         self.ignored_functions = ignored_functions
         self.ignored_types = ignored_types
         self.type_substitution = type_substitution
+        self.conditioned_functions = conditioned_functions
 
 
 class Header:
