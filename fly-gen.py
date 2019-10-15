@@ -18,12 +18,12 @@ import logging
 import sys
 from typing import Set, List
 
-from scripts import Config, Header
+from scripts import Config, Header, Type
 from scripts.generators import generate_zero_decls, generate_test_file
 from scripts.parser import parse
 
 
-def collect_types(headers_list: List[Header]) -> Set[str]:
+def collect_types(headers_list: List[Header]) -> Set[Type]:
     acc = set()
     for header in headers_list:
         for func in header.funcs:
@@ -44,7 +44,7 @@ ignored_types = ['void']
 ignored_funcs = ['va_arg', 'va_start']
 conditional_funcs = ['longjmp', 'abort', 'exit', '_Exit']
 # TODO expand into something more meaningful
-type_subs = {'real-floating': 'float', 'scalar': 'int'}
+type_subs = {'real-floating': Type('float'), 'scalar': Type('int')}
 
 config = Config(ignored_funcs, ignored_types, type_subs, conditional_funcs)
 

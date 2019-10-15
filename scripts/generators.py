@@ -14,13 +14,16 @@
 from operator import attrgetter
 from typing import List, Optional, Dict
 
-from scripts import VarDecl, Header, Config
+from scripts import VarDecl, Header, Config, Type
 
 
-def generate_zero_decls(types: Optional[List[str]]) -> List[VarDecl]:
+def generate_zero_decls(types: Optional[List[Type]]) -> List[VarDecl]:
     decls = []
     for t in types:
         var_name = t.name.replace(' ', '_')
+        var_name = var_name.replace('(', '_OP_')
+        var_name = var_name.replace(')', '_CL_')
+        var_name = var_name.replace(',', '_CMM_')
         var_name = var_name.replace('*', 'p')
         var_name = 'var_' + var_name
 

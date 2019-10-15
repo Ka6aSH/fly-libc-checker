@@ -15,10 +15,28 @@
 from typing import List, Optional, Dict, Callable
 
 
+class Type:
+    def __init__(self, name: str,
+                 decl_func: Optional[Callable[[str], str]] = None) -> None:
+        self.name = name
+        if decl_func:
+            self.decl_func = decl_func
+        else:
+            self.decl_func = lambda x: '{} {}'.format(self.name, x)
+
+    def __hash__(self) -> int:
+        return hash(self.name) + hash(self.decl_func(''))
+
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, Type):
+            return self.name == o.name and self.decl_func('') == o.decl_func('')
+        return False
+
+
 class Config:
     def __init__(self, ignored_functions: Optional[List[str]] = None,
                  ignored_types: Optional[List[str]] = None,
-                 type_substitution: Optional[Dict[str, str]] = None,
+                 type_substitution: Optional[Dict[str, Type]] = None,
                  conditioned_functions: Optional[List[str]] = None) -> None:
         self.ignored_functions = ignored_functions
         self.ignored_types = ignored_types
@@ -38,24 +56,6 @@ class Function:
         self.symbol = symbol
         self.ret_type = None
         self.args = []
-
-
-class Type:
-    def __init__(self, name: str,
-                 decl_func: Optional[Callable[[str], str]] = None) -> None:
-        self.name = name
-        if decl_func:
-            self.decl_func = decl_func
-        else:
-            self.decl_func = lambda x: '{} {}'.format(self.name, x)
-
-    def __hash__(self) -> int:
-        return hash(self.name) + hash(self.decl_func(''))
-
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, Type):
-            return self.name == o.name and self.decl_func('') == o.decl_func('')
-        return False
 
 
 class VarDecl:

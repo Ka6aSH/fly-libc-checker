@@ -22,6 +22,39 @@ def parse_header(line: str, config: Optional[Config] = None) -> Header:
     return Header(line[line.index('<') + 1:line.index('>')])
 
 
+def parse_function_pointer(line: str) -> Optional[Type]:
+    if line.count('(') != line.count(')'):
+        logging.error('Unbalanced parentheses in: ' + line)
+        return None
+    fcp = line.index(')')
+    la = line.rindex('*', 0, fcp)
+    var_name = line[la + 1:fcp]
+    type = line.replace(var_name, '')
+    decl_format = line.replace(var_name, '{}')
+    decl_func = lambda x: decl_format.format(x)
+    return Type(type, decl_func)
+
+
+def split_args(line: str) -> List[str]:
+    begin = 0
+    end = 0
+    state = 0
+    res = []
+    for c in line:
+        if c == ',' and state == 0 and end > begin:
+            res.append(line[begin:end])
+            begin = end + 1
+        elif c == '(':
+            state += 1
+        elif c == ')':
+            state -= 1
+
+        end += 1
+    if end > begin:
+        res.append(line[begin:])
+    return res
+
+
 def parse_function(line: str,
                    config: Optional[Config] = None) -> Optional[Function]:
     op = line.find('(')
@@ -49,7 +82,7 @@ def parse_function(line: str,
     if ret != 'void':
         parsed_function.ret_type = Type(ret)
 
-    args = line[op + 1:cp].split(',')
+    args = split_args(line[op + 1:cp])
     for idx, arg in enumerate(args):
         arg = arg.replace(' restrict', '')
         arg = arg.strip()
@@ -65,25 +98,28 @@ def parse_function(line: str,
                 return None
             continue
         if '(' in arg or ')' in arg:
-            logging.warning('Ignoring function "{}": unsupported function '
-                            'pointer argument at line:\n\t{}'
-                            .format(parsed_function.symbol, line))
-            return None
+            arg_type = parse_function_pointer(arg)
+            if not arg_type:
+                logging.warning('Ignoring function "{}": unrecognized argument '
+                                'type:\n\t{}'.format(parsed_function.symbol,
+                                                     line))
+                return None
+        else:
+            an = arg.rindex(' ')
+            while arg[an + 1] == '*':
+                an += 1
 
-        an = arg.rindex(' ')
-        while arg[an + 1] == '*':
-            an += 1
+            arg_type = Type(arg[:an + 1].strip())
 
-        arg_type = arg[:an + 1].strip()
         if config:
-            if arg_type in config.type_substitution:
-                arg_type = config.type_substitution[arg_type]
-            if arg_type in config.ignored_types:
+            if arg_type.name in config.type_substitution:
+                arg_type = config.type_substitution[arg_type.name]
+            if arg_type.name in config.ignored_types:
                 logging.info('Ignoring the line due to ignored type "{}" of one'
                              ' of arguments:\n\t{}'.format(arg_type, line))
                 return None
 
-        parsed_function.args.append(Type(arg_type))
+        parsed_function.args.append(arg_type)
 
     return parsed_function
 
