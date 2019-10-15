@@ -15,7 +15,7 @@
 import logging
 from typing import Optional, List
 
-from scripts import Header, Function, Config
+from scripts import Header, Function, Config, Type
 
 
 def parse_header(line: str, config: Optional[Config] = None) -> Header:
@@ -47,7 +47,7 @@ def parse_function(line: str,
 
     ret = line[:last_space + 1 + add].strip()
     if ret != 'void':
-        parsed_function.ret_type = ret
+        parsed_function.ret_type = Type(ret)
 
     args = line[op + 1:cp].split(',')
     for idx, arg in enumerate(args):
@@ -65,7 +65,7 @@ def parse_function(line: str,
                 return None
             continue
         if '(' in arg or ')' in arg:
-            logging.warning('Ignoring function "{}": unsupported function'
+            logging.warning('Ignoring function "{}": unsupported function '
                             'pointer argument at line:\n\t{}'
                             .format(parsed_function.symbol, line))
             return None
@@ -83,7 +83,7 @@ def parse_function(line: str,
                              ' of arguments:\n\t{}'.format(arg_type, line))
                 return None
 
-        parsed_function.args.append(arg_type)
+        parsed_function.args.append(Type(arg_type))
 
     return parsed_function
 

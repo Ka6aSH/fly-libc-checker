@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Callable
 
 
 class Config:
@@ -40,8 +40,26 @@ class Function:
         self.args = []
 
 
+class Type:
+    def __init__(self, name: str,
+                 decl_func: Optional[Callable[[str], str]] = None) -> None:
+        self.name = name
+        if decl_func:
+            self.decl_func = decl_func
+        else:
+            self.decl_func = lambda x: '{} {}'.format(self.name, x)
+
+    def __hash__(self) -> int:
+        return hash(self.name) + hash(self.decl_func(''))
+
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, Type):
+            return self.name == o.name and self.decl_func('') == o.decl_func('')
+        return False
+
+
 class VarDecl:
-    def __init__(self, name: str, type: str, decl: str) -> None:
+    def __init__(self, name: str, type: Type, decl: str) -> None:
         self.name = name
         self.type = type
         self.decl = decl

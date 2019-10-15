@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from operator import attrgetter
 from typing import List, Optional, Dict
 
 from scripts import VarDecl, Header, Config
@@ -20,11 +20,11 @@ from scripts import VarDecl, Header, Config
 def generate_zero_decls(types: Optional[List[str]]) -> List[VarDecl]:
     decls = []
     for t in types:
-        var_name = t.replace(' ', '_')
+        var_name = t.name.replace(' ', '_')
         var_name = var_name.replace('*', 'p')
         var_name = 'var_' + var_name
 
-        decl = '{} {} = {{0}};'.format(t, var_name)
+        decl = '{} = {{0}};'.format(t.decl_func(var_name))
         decls.append(VarDecl(var_name, t, decl))
     return decls
 
@@ -39,7 +39,7 @@ def generate_test_file(headers: List[Header],
 
     output.append('void main(int argc, char *argv[]) {')
     # To have stable output, traverse sorted keys
-    sorted_var_names = sorted(type_idx.keys())
+    sorted_var_names = sorted(type_idx.keys(), key=attrgetter('name'))
     for name in sorted_var_names:
         output.append('\t{}'.format(type_idx[name].decl))
 
