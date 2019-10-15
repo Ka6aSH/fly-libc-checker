@@ -25,7 +25,7 @@ def parse_header(line: str, config: Optional[Config] = None) -> Header:
 def parse_function(line: str,
                    config: Optional[Config] = None) -> Optional[Function]:
     op = line.find('(')
-    cp = line.find(')')
+    cp = line.rfind(')')
     last_space = line.rfind(' ', 0, op)
     if op < 0 or cp < 0 or last_space < 0:
         logging.info('Ignoring line due to absence of parentheses and spaces:\n'
@@ -37,6 +37,10 @@ def parse_function(line: str,
 
     if config and func in config.ignored_functions:
         logging.info('Ignoring the function "{}" at:\n\t{}'.format(func, line))
+        return None
+    elif not func:
+        logging.warning('Ignoring the function due to unrecognized name at:\n'
+                        '\t{}'.format(line))
         return None
 
     parsed_function = Function(line, func)
@@ -58,7 +62,13 @@ def parse_function(line: str,
             if idx != 0 or len(args) != 1:
                 logging.warning('void argument is not the only and last. '
                                 'Probably an error at line:\n\t{}'.format(line))
+                return None
             continue
+        if '(' in arg or ')' in arg:
+            logging.warning('Ignoring function "{}": unsupported function'
+                            'pointer argument at line:\n\t{}'
+                            .format(parsed_function.symbol, line))
+            return None
 
         an = arg.rindex(' ')
         while arg[an + 1] == '*':

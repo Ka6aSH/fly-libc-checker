@@ -38,10 +38,10 @@ if len(sys.argv) < 2:
     print('Usage: ./fly-gen.py standards/c99.std main.c')
     exit(0)
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 
 ignored_types = ['void']
-ignored_funcs = ['va_arg', 'va_start', '', 'atexit', 'bsearch', 'qsort']
+ignored_funcs = ['va_arg', 'va_start']
 conditional_funcs = ['longjmp', 'abort', 'exit', '_Exit']
 # TODO expand into something more meaningful
 type_subs = {'real-floating': 'float', 'scalar': 'int'}
