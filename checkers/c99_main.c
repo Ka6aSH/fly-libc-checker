@@ -50,6 +50,7 @@ void main(int argc, char *argv[]) {
 	fpos_t * var_fpos_t_p = {0};
 	imaxdiv_t var_imaxdiv_t = {0};
 	int var_int = {0};
+	int (*var_int__OP_p_CL__OP_const_void_p_CMM__const_void_p_CL_)(const void *, const void *) = {0};
 	int * var_int_p = {0};
 	intmax_t var_intmax_t = {0};
 	jmp_buf var_jmp_buf = {0};
@@ -71,6 +72,7 @@ void main(int argc, char *argv[]) {
 	unsigned long int var_unsigned_long_int = {0};
 	unsigned long long int var_unsigned_long_long_int = {0};
 	va_list var_va_list = {0};
+	void (*var_void__OP_p_CL__OP_void_CL_)(void) = {0};
 	void * var_void_p = {0};
 	wchar_t var_wchar_t = {0};
 	wchar_t * var_wchar_t_p = {0};
@@ -432,12 +434,15 @@ void main(int argc, char *argv[]) {
 	var_void_p = realloc(var_void_p,var_size_t);
 	if (argc < 2)
 		abort();
+	var_int = atexit(var_void__OP_p_CL__OP_void_CL_);
 	if (argc < 3)
 		exit(var_int);
 	if (argc < 4)
 		_Exit(var_int);
 	var_char_p = getenv(var_const_char_p);
 	var_int = system(var_const_char_p);
+	var_void_p = bsearch(var_const_void_p,var_const_void_p,var_size_t,var_size_t,var_int__OP_p_CL__OP_const_void_p_CMM__const_void_p_CL_);
+	qsort(var_void_p,var_size_t,var_size_t,var_int__OP_p_CL__OP_const_void_p_CMM__const_void_p_CL_);
 	var_int = abs(var_int);
 	var_long_int = labs(var_long_int);
 	var_long_long_int = llabs(var_long_long_int);
