@@ -1,5 +1,7 @@
 #include <assert.h>
+#ifndef __STDC_NO_COMPLEX__
 #include <complex.h>
+#endif
 #include <ctype.h>
 #include <errno.h>
 #include <fenv.h>
@@ -81,6 +83,7 @@ void main(int argc, char *argv[]) {
 	wctype_t var_wctype_t = {0};
 	wint_t var_wint_t = {0};
 	assert(var_int);
+#ifndef __STDC_NO_COMPLEX__
 	var_double_complex = cacos(var_double_complex);
 	var_float_complex = cacosf(var_float_complex);
 	var_long_double_complex = cacosl(var_long_double_complex);
@@ -147,6 +150,7 @@ void main(int argc, char *argv[]) {
 	var_double = creal(var_double_complex);
 	var_float = crealf(var_float_complex);
 	var_long_double = creall(var_long_double_complex);
+#endif
 	var_int = isalnum(var_int);
 	var_int = isalpha(var_int);
 	var_int = isblank(var_int);

@@ -38,7 +38,12 @@ def generate_test_file(headers: List[Header],
     output = []
 
     for h in headers:
-        output.append('#include <{}>'.format(h.name))
+        if h.name in config.conditioned_features_defs:
+            output.append('#ifndef {}'.format(config.conditioned_features_defs[h.name]))
+            output.append('#include <{}>'.format(h.name))
+            output.append('#endif')
+        else:
+            output.append('#include <{}>'.format(h.name))
 
     output.append('void main(int argc, char *argv[]) {')
     # To have stable output, traverse sorted keys
@@ -49,6 +54,9 @@ def generate_test_file(headers: List[Header],
     # Provides different conditions so that they would not be optimized out
     cond_counter = 1
     for h in headers:
+        if h.name in config.conditioned_features_defs:
+            output.append('#ifndef {}'.format(config.conditioned_features_defs[h.name]))
+
         for f in h.funcs:
             if config and f.symbol in config.conditioned_functions:
                 output.append('\tif (argc < {})'.format(cond_counter))
@@ -67,5 +75,8 @@ def generate_test_file(headers: List[Header],
                 line += type_idx[f.args[-1]].name
             line += ');'
             output.append(line)
+
+        if h.name in config.conditioned_features_defs:
+            output.append('#endif')
     output.append('}')
     return '\n'.join(output)

@@ -34,7 +34,7 @@ def collect_types(headers_list: List[Header]) -> Set[Type]:
     return acc
 
 
-if len(sys.argv) < 2:
+if len(sys.argv) < 3:
     print('Usage: ./fly-gen.py standards/c99.std main.c')
     exit(0)
 
@@ -43,10 +43,16 @@ logging.basicConfig(level=logging.WARNING)
 ignored_types = ['void']
 ignored_funcs = ['va_arg', 'va_start']
 conditional_funcs = ['longjmp', 'abort', 'exit', '_Exit']
+conditional_features = {'complex.h': '__STDC_NO_COMPLEX__',
+                        'stdatomic.h': '__STDC_NO_ATOMICS__',
+                        'threads.h': '__STDC_NO_THREADS__'}
 # TODO expand into something more meaningful
-type_subs = {'real-floating': Type('float'), 'scalar': Type('int')}
+type_subs = {'real-floating': 'float', 'scalar': 'int',
+             'C': 'int', 'atomic_type': 'atomic_int',
+             'restrict': '', '_Noreturn': ''}
 
-config = Config(ignored_funcs, ignored_types, type_subs, conditional_funcs)
+config = Config(ignored_funcs, ignored_types, type_subs, conditional_funcs,
+                conditional_features)
 
 headers = parse(sys.argv[1], config)
 all_types = collect_types(headers)

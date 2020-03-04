@@ -80,11 +80,21 @@ def parse_function(line: str,
 
     ret = line[:last_space + 1 + add].strip()
     if ret != 'void':
-        parsed_function.ret_type = Type(ret)
+        if ret in config.ignored_types:
+            logging.info('Ignoring the line due to ignored return type "{}":'
+                         '\n\t{}'.format(ret, line))
+            return None
+
+        ret_type = Type(ret)
+        for k, v in config.type_substitution.items():
+            if k in ret_type.name:
+                # TODO several spaces in the middle
+                ret_type = Type(ret_type.name.replace(k, v).strip())
+
+        parsed_function.ret_type = ret_type
 
     args = split_args(line[op + 1:cp])
     for idx, arg in enumerate(args):
-        arg = arg.replace(' restrict', '')
         arg = arg.strip()
         if arg == '...':
             if idx != len(args) - 1:
@@ -112,12 +122,15 @@ def parse_function(line: str,
             arg_type = Type(arg[:an + 1].strip())
 
         if config:
-            if arg_type.name in config.type_substitution:
-                arg_type = config.type_substitution[arg_type.name]
             if arg_type.name in config.ignored_types:
                 logging.info('Ignoring the line due to ignored type "{}" of one'
                              ' of arguments:\n\t{}'.format(arg_type, line))
                 return None
+
+            for k, v in config.type_substitution.items():
+                if k in arg_type.name:
+                    # TODO several spaces in the middle
+                    arg_type = Type(arg_type.name.replace(k, v).strip())
 
         parsed_function.args.append(arg_type)
 

@@ -36,12 +36,14 @@ class Type:
 class Config:
     def __init__(self, ignored_functions: Optional[List[str]] = None,
                  ignored_types: Optional[List[str]] = None,
-                 type_substitution: Optional[Dict[str, Type]] = None,
-                 conditioned_functions: Optional[List[str]] = None) -> None:
+                 type_substitution: Optional[Dict[str, str]] = None,
+                 conditioned_functions: Optional[List[str]] = None,
+                 conditional_features: Optional[Dict[str, str]] = None) -> None:
         self.ignored_functions = ignored_functions
         self.ignored_types = ignored_types
         self.type_substitution = type_substitution
         self.conditioned_functions = conditioned_functions
+        self.conditioned_features_defs = conditional_features
 
 
 class Header:
